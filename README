@@ -1,0 +1,64 @@
+Comments/question on oxc should be sent to gregg@limings.net
+
+CHANGES
+-------
+v0.5
+- Added OWFS data collection method
+
+v0.4
+- Added read_timeout as global or per-sensor config
+- Improved logging; datetime stamps now displayed
+
+v0.3
+- properly report humidity in BSC level format (vice percentage)
+- complain if digitemp program and/or conf file does not exist
+- allow optional, "extra options" to be passed to digitemp
+
+v0.2
+- improved error handling
+- report failed sensors as state=off 
+
+FUTURE CHANGES (not yet added)
+--------------
+- Ability to assign differing sample rates/priorities to individual sensors
+- Read temp settings from humidity sensors for owfs method
+- add owfs read timeouts
+INSTALLATION
+-----------
+
+oxc may be placed anywhere within your file system.
+A recommended practice is to place it in /usr/local.
+
+oxc must be started with equivalent access/privs
+as the user that executes digitemp.
+
+Start oxc via the command "./oxc.pl" (w/o the quotes)
+
+IMPORTANT: If you are starting oxc from a directory other 
+than its installation, you must pass the path to its location.
+For example:
+
+/usr/local/oxc/oxc.pl -path=/usr/local/oxc &
+
+More precise control over the lib location and config file
+location exists via the lib and config arguments.
+
+All logging is sent to /tmp/oxc.log by default.
+You can monitor oxc during execution using the
+command "tail -f /tmp/oxc.log".
+
+CONFIGURATION
+-------------
+
+Locate your oxc.conf included as a sample in this
+release.  Uncomment any properties that you wish 
+to override.  Commented properties show the default
+values.  Additional notes are included as comments
+within this configuration file.
+
+IMPORTANT!! You must specify each sensor and it's
+one-wire serial number in the oxc.conf file.  This 
+information can be obtained from digitemp's own 
+configuration file (albeit in a different format) or
+by looking in the owfs mount directory.
+

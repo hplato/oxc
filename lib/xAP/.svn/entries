@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="15"
+   name=""
+   committed-date="2007-09-18T03:23:22.858757Z"
+   url="https://xapconnectors.svn.sourceforge.net/svnroot/xapconnectors/oxc/lib/xAP"
+   last-author="hplato"
+   kind="dir"
+   repos="https://xapconnectors.svn.sourceforge.net/svnroot/xapconnectors"
+   revision="24"/>
+<entry
+   committed-rev="15"
+   name="BSC_Item.pm"
+   text-time="2007-09-18T03:18:39.000000Z"
+   committed-date="2007-09-18T03:23:22.858757Z"
+   checksum="688889cdebedf298044d9d07bc7abad0"
+   last-author="hplato"
+   kind="file"
+   prop-time="2007-09-18T03:21:39.000000Z"/>
+<entry
+   committed-rev="15"
+   name="xAP_Item.pm"
+   text-time="2007-09-18T03:18:39.000000Z"
+   committed-date="2007-09-18T03:23:22.858757Z"
+   checksum="e9d0a29ec27895a420864a3ebf56a11f"
+   last-author="hplato"
+   kind="file"/>
+<entry
+   committed-rev="15"
+   name="Comm.pm"
+   text-time="2007-09-18T03:18:39.000000Z"
+   committed-date="2007-09-18T03:23:22.858757Z"
+   checksum="38899fedd6e9722624e021d95dad8a68"
+   last-author="hplato"
+   kind="file"/>
+<entry
+   committed-rev="15"
+   name="Util.pm"
+   text-time="2007-09-18T03:18:39.000000Z"
+   committed-date="2007-09-18T03:23:22.858757Z"
+   checksum="49a8b14cf32c77656c0cbe8a5ef623f1"
+   last-author="hplato"
+   kind="file"/>
+</wc-entries>

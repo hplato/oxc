@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="15"
+   name=""
+   committed-date="2007-09-18T03:23:22.858757Z"
+   url="https://xapconnectors.svn.sourceforge.net/svnroot/xapconnectors/oxc/lib/site/Config"
+   last-author="hplato"
+   kind="dir"
+   repos="https://xapconnectors.svn.sourceforge.net/svnroot/xapconnectors"
+   revision="24"/>
+<entry
+   committed-rev="15"
+   name="IniFiles.pm"
+   text-time="2007-09-18T03:18:38.000000Z"
+   committed-date="2007-09-18T03:23:22.858757Z"
+   checksum="35ee5d9e6958aaae33e497c8845b24d1"
+   last-author="hplato"
+   kind="file"/>
+</wc-entries>

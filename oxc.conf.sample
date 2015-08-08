@@ -1,0 +1,132 @@
+[general]
+
+#log_file = /tmp/oxc.log
+
+##
+## log_level 0 is least verbose; 4 is most
+##
+##     0 => "FATAL",
+##     1 => "ERROR",
+##     2 => "WARN",
+##     3 => "INFO",
+##     4 => "DEBUG"
+##
+#log_level = 2
+
+## sensor_read_interval is the time period between 
+## sensors samples from the 1-wire bus
+##
+# sensor_read_interval = 15
+
+
+## sensor_report_interval is the time period (in secs) between
+## sensor updates.  A sensor will report more frequently,
+## However, if it changes exceed a (currently non-configurable)
+## threshold (set at 1), a sensor report will occur.
+## sensor_report_interval must be >= sensor_read_interval
+##
+#sensor_report_interval = 300
+
+
+## temperature scale; valid values are F or C
+##
+# temp_scale = F
+
+## Data Collection Method (new to v0.5)
+## method = owfs
+## 1-wire file system owfs.sourceforge.net
+## method = digitemp
+## digitemp program used to gather data
+## defaults to digitemp
+##
+# method = owfs
+
+
+[xap]
+##
+## heartbeat interval in minutes
+##
+#hbeat_interval = 1
+
+##
+## ignore the xAP base uid unless it conflicts w/ other apps
+##
+#base_uid = EA09
+
+##
+## the source of xAP messages will be of the form:
+## liming.oxc.<instance_name>
+##
+instance_name = house
+
+##
+## set nohub = 1 if you don't have a hub operating; default is 0
+nohub = 0
+
+
+##
+## IMPORTANT!!! YOU MUST ALTER THE FOLLOWING PARAMS
+## TO BE CONSISTENT WITH YOUR DIGITEMP INSTALLATION
+## UNLESS METHOD = OWFS
+[digitemp]
+
+program_path = /usr/local/bin/digitemp
+config_path = /etc/digitemp.conf
+## optional; read_timeout defines the timeout in seconds for all sensors if defined here; default is 1
+# read_timeout = 1
+
+## optional; extra_options adds an ability to append extra options to digitemp when called
+## for example, if the MySQL logging capability is desired via
+## http://illx.org:8080/digitemp/index.jsp, then set extra_options to -e
+# extra_options = -e
+
+## One Wire File System (owfs) settings
+[owfs]
+## Mount point you have specified for owfs
+## ie owfs -u /mnt/owfs
+# mount_point = /mnt/owfs
+
+## Number of decimal places to report
+## for full decimal reporting set this to 0
+## defaults to no decimal precision
+# precision = 2
+
+
+##
+## Sensor declarations
+##
+
+## Each section must start w/ "sensor."  any single word (with hypens,
+## underscores and/or numbers may follow.  This "word" will be considered
+## the sensor's name and an xAP endpoint will be created for it
+##
+## The section names and serial numbers below are EXAMPLES ONLY
+## Please replace with names and serial number pertinent to your
+## environment
+
+[sensor.outside-t]
+
+## serial is the serial# of the one-wire device
+serial = 103C28B7000800CC 
+
+## delta_report specifies a change threshold that 
+## will trigger a sensor report sooner than the scheduled
+## periodic report; set to an exceptionally high value to 
+## prevent event based reports
+delta_report = 2
+
+## for sensors that contain more than one device 
+## such as the Honeywell humidity sensor, set
+## the second delta (if different from the primary)
+## as:
+## delta_report = 3
+
+## read_timeout (seconds) overrides the global or default timeout on a per sensor basis
+# read_timeout = 1
+
+[sensor.outside-h]
+
+serial = 2687306E0000000F 
+delta_report_humid = 5
+
+
