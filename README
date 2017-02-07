@@ -1,4 +1,7 @@
-Comments/question on oxc should be sent to gregg@limings.net
+One-Wire xAP connector
+----------------------
+
+Reads a one-wire file system (OWFS) and sends sensor changes out as xAP messages.
 
 CHANGES
 -------
@@ -7,6 +10,8 @@ v0.7
 
 v0.6
 - Added hub support
+  - To use, each of the branches have to be 'turned on'. To do so
+  cat 1 > <owfs_mount_point>/EF.<HUBID>/hub/branch.<x>
 
 v0.5
 - Added OWFS data collection method
@@ -27,8 +32,8 @@ v0.2
 FUTURE CHANGES (not yet added)
 --------------
 - Ability to assign differing sample rates/priorities to individual sensors
-- Read temp settings from humidity sensors for owfs method
 - add owfs read timeouts
+
 INSTALLATION
 -----------
 
