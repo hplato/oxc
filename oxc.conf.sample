@@ -27,6 +27,8 @@
 ##
 #sensor_report_interval = 300
 
+## solar radiation measurement; valid values are lux or wm2
+#solar = wm2
 
 ## temperature scale; valid values are F or C
 ##
@@ -126,7 +128,10 @@ delta_report = 2
 
 [sensor.outside-h]
 
-serial = 2687306E0000000F 
+serial = 2687306E0004000F 
 delta_report_humid = 5
 
-
+[sensor.house-s]
+serial = 2636A123450000
+type = solar
+delta_report_solar = 5

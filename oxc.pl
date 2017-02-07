@@ -11,7 +11,6 @@ use Getopt::Long;
 use Time::HiRes qw(gettimeofday);
 #use constant 1.01;
 
-
 my ($config_path, $lib_path, $app_path);
 our $bsc;
 our $log_level;
@@ -24,8 +23,9 @@ our %devices;
 our $temp_scale;
 our $ow_method;
 our $startscan = 1;
-our $version = 0.6;
+our $version = 0.7;
 our @OWFS_hubs = ("/");
+our $solar_mw2 = 0.0079; #683 Lux = 1 Wm2 as well http://bccp.berkeley.edu/o/Academy/workshop08/08%20PDFs/Inv_Square_Law.pdf
 
 BEGIN {
    GetOptions("config:s"=>\$config_path,
@@ -219,7 +219,9 @@ sub init
 	  my $hubnames = join ", ",@OWFS_hubs;
           &xAP::Util::info("OWFS Search hubs are: $hubnames");
 	}
-        &xAP::Util::info("Initialization complete. Method is $ow_method, Scale is $temp_scale");
+	my $solar_type = "lux";
+	$solar_type = $conf{general}{solar} if (defined $conf{general}{solar});
+        &xAP::Util::info("Initialization complete. Method is $ow_method, Scale is $temp_scale, solar is $solar_type");
 
 }
 
@@ -395,10 +397,8 @@ sub readOWFS {
 		}
 		&xAP::Util::debug("OWFS reading data for all sensors");
 	}
-
 	for my $sensor (@read_sensors) {
           $device = $devices{$sensor};
-    
            if ($device) {
 
 	   my $owfs_file = $device->get_path;
@@ -408,9 +408,25 @@ sub readOWFS {
 	   $type2 = "unknown";
 	   $value1 = ();
 	   $value2 = ();
-
-	   if ( -e "$owfs_file/temperature" ) {
+	   my $key = "sensor." . $device->name;
+	   if (( -e "$owfs_file/S3-R1-A/illuminance" ) and ((defined $conf{$key}{type}) and (lc $conf{$key}{type} eq "solar"))) {
+           &xAP::Util::debug("Checking file $owfs_file solar...");
+	      open (DATA, "$owfs_file/S3-R1-A/illuminance");
+           &xAP::Util::debug("Checking file $owfs_file solar...");
+	      $value1 = <DATA>;
+	      close (DATA);
+	      if ($value1) {
+	         $value1 =~ s/^\s+//; #remove white space
+	         #$value1 = sprintf("%.${precision}f",$value1) if $precision; #add decimal precision
+	         $type1 = "solar";
+	         $value1 = $value1 * $solar_mw2 if ($conf{general}{solar} =~ /mw2/i);
+	         $value1 = sprintf("%.${precision}f",$value1) if $precision; #add decimal precision
+	         $data->{val1} = $value1;
+              }
+	   } elsif ( -e "$owfs_file/temperature" ) {
+           &xAP::Util::debug("Checking file $owfs_file temp...");
 	      open (DATA, "$owfs_file/temperature");
+           &xAP::Util::debug("Checking file $owfs_file temp...");
 	      $value1 = <DATA>;
 	      close (DATA);
 	      if ($value1) {
@@ -420,8 +436,10 @@ sub readOWFS {
 	         $data->{val1} = $value1;
               }
 	   }
-	   if ( -e "$owfs_file/humidity" ) {
+	   if (( -e "$owfs_file/humidity" ) and ($type1 ne "solar")) {
+           &xAP::Util::debug("Checking file $owfs_file humid...");
 	      open (DATA, "$owfs_file/humidity");
+           &xAP::Util::debug("Checking file $owfs_file humid...");
 	      my $value = <DATA>;
 	      close (DATA);
 	      if ($value) {
@@ -439,11 +457,18 @@ sub readOWFS {
 	      }
             }
 	   $value1 = "unknown" if !$value1;
+           &xAP::Util::info("Sensor unknown for file $owfs_file.") if ($type1 eq "unknown");
+	   my $msg1 = "Initial Scan: $owfs_file is a $type1" if ($startscan);
+	   $msg1 .= " ($type2)" if (($type2 ne "unknown") and $startscan);
+	   $msg1 .= " sensor with a value of $value1" if $startscan;
+	   $msg1 .= " ($value2)" if ($value2 and $startscan);
+	   &xAP::Util::info($msg1) if $startscan;
+	   my $msg2 = "$owfs_file is a $type1";
+	   $msg2 .= "/$type2" if ($value2);
+           $msg2 .= " sensor with a value of $value1";
+	   $msg2 .= "/$value2" if ($value2);
+	   &xAP::Util::debug($msg2);
 	   $value2 = "unknown" if !$value2;
-	   &xAP::Util::info("Sensor unknown for file $owfs_file.") if ($type1 eq "unknown");
-	   &xAP::Util::info("Initial Scan: $owfs_file is a $type1 ($type2) sensor with a value of $value1 ($value2)") if $startscan;
-	   &xAP::Util::debug("$owfs_file is a $type1/$type2 sensor with a value of $value1/$value2");
-
  
 	      if ($type1 ne "unknown") {
 		    $data->{state} = 'on';
@@ -610,15 +635,19 @@ sub update {
 		$dbg_msg .= " val2=" . $data->{val2} if $data->{val2};
 		&xAP::Util::debug($dbg_msg);
 	}
+
+&xAP::Util::debug("update0");
 	if (!($self->next_send) || (gettimeofday() > $self->next_send) 
 		|| ($delta_primary > $self->delta_report('primary') 
                 or $delta_secondary > $self->delta_report('secondary')))  {
+&xAP::Util::debug("update1");
 		my %bsc_data;
 		$bsc_data{mode} = 'input';
 		$bsc_data{state} = $data->{state};
 		my $subaddress = $self->name;
 		if ($data->{state} eq 'on') {
 			if ($data->{val1}) {
+&xAP::Util::debug("update2");
 				my $subuid = sprintf("%X",$self->aux_id + 1); # add 1 to the Id since Id can be 0
 	        	        $subuid = "0$subuid" if (length($subuid) == 1);
 				$bsc_data{id} = $subuid;
@@ -628,7 +657,11 @@ sub update {
 				} elsif ($self->{type} eq 'temp') {
 					$bsc_data{text} = $data->{val1} . "$temp_scale";
 					delete $bsc_data{level} if exists($bsc_data{level});
-				} 
+				} elsif ($self->{type} eq 'solar') {
+		                        $bsc_data{level} = $data->{val1};
+                                        delete $bsc_data{text} if exists($bsc_data{text});
+				}
+&xAP::Util::debug("update3");
 				if ($delta_primary > $self->delta_report('primary')) {
 					$bsc->send_event($self->{type} . ".$subaddress",%bsc_data);
 				} else {	
@@ -636,6 +669,7 @@ sub update {
 				}
 			} 
 			if ($data->{val2}) {
+&xAP::Util::debug("update4");
 				my $subuid = sprintf("%X",$self->aux_id + 128);
         		        $subuid = "0$subuid" if (length($subuid) == 1);
 				$bsc_data{id} = $subuid;
@@ -654,19 +688,24 @@ sub update {
 			}
 			$self->next_send(gettimeofday() + $sensor_report_interval); 
 		} else {
+&xAP::Util::debug("update5");
 			my $subuid = sprintf("%X",$self->aux_id + 1); # add 1 to the Id since Id can be 0
        		        $subuid = "0$subuid" if (length($subuid) == 1);
 			$bsc_data{id} = $subuid;
 			$bsc->send_info($self->{type} . ".$subaddress",%bsc_data);
 			$self->next_send(gettimeofday() + $sensor_report_interval); 
 			if ($self->{type2} and $self->{type2} ne 'unknown') {
+&xAP::Util::debug("update6");
 				$subuid = sprintf("%X",$self->aux_id + 128); # add 1 to the Id since Id can be 0
        			        $subuid = "0$subuid" if (length($subuid) == 1);
 				$bsc_data{id} = $subuid;
 				$bsc->send_info($self->{type2} . ".$subaddress",%bsc_data);
 			}
+&xAP::Util::debug("update7");
 		}
+&xAP::Util::debug("update8");
 	} 
+&xAP::Util::debug("update9");
 }
 
 1;
