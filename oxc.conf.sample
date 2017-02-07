@@ -66,6 +66,10 @@ instance_name = house
 nohub = 0
 
 
+## On newer versions of OWFS you may have to put in a hub line 
+#hubs = 1F.5EASDF000000/main,1F.D6DE08000000/main,1F.D53e08000000/main,1F.553208000000/aux,1F.541208000000/aux,1F.D23408000000/aux
+
+
 ##
 ## IMPORTANT!!! YOU MUST ALTER THE FOLLOWING PARAMS
 ## TO BE CONSISTENT WITH YOUR DIGITEMP INSTALLATION
