@@ -559,10 +559,21 @@ sub set_path {
 	# read the file for temp information. owfs format is slightly different than serial #s
 	# ie 103A8CE400080002 = 10.3A8CE400080000
 
-	for my $index (0..$#OWFS_hubs) {
+	&xAP::Util::debug("Testing OWFS for $sensor");
+	my $sensor_owfs_name = substr($sensor,0,2) . "." . substr($sensor,2,10) . "00";
 
-	  my $owfs_file = $root . $OWFS_hubs[$index] . substr($sensor,0,2) . "." . substr($sensor,2,10) . "00";
-	  $self->{Path} = $owfs_file if (-e $owfs_file);
+	foreach my $hub (@OWFS_hubs) {
+	  my $hub_filename = $root . $hub;
+	  &xAP::Util::debug("Testing OWFS: Looking in hub: $hub_filename");
+	  my @file_list = glob($hub_filename . "*");
+
+	  foreach my $filename (@file_list) {
+	    if ($filename =~ /$sensor_owfs_name/) {
+	      $self->{Path} = $hub_filename . $sensor_owfs_name;
+	      last;
+	    }
+	  }
+
 	  if ($self->{Path}) {
 		&xAP::Util::debug("OWFS Path for $sensor is $self->{Path}");
 		return $self->{Path};
