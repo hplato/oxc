@@ -2,6 +2,12 @@ Comments/question on oxc should be sent to gregg@limings.net
 
 CHANGES
 -------
+v0.7
+- Added Solar Radiation Sensor
+
+v0.6
+- Added hub support
+
 v0.5
 - Added OWFS data collection method
 
