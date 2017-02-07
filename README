@@ -11,7 +11,7 @@ v0.7
 v0.6
 - Added hub support
   - To use, each of the branches have to be 'turned on'. To do so
-  cat 1 > <owfs_mount_point>/EF.<HUBID>/hub/branch.<x>
+  echo 1 > <owfs_mount_point>/EF.<HUBID>/hub/branch.<x>
 
 v0.5
 - Added OWFS data collection method
